@@ -87,16 +87,12 @@ public class AutoTestMechServo extends LinearOpMode {
         return builder
                 // Move to start of line
                 .strafeToLinearHeading(new Vector2d(targetX, 20), Math.toRadians(90))
-
                 // "Open" servo
                 .stopAndAdd(servo1.moveServo(1.0))
-
                 // Drives forward to collect balls
                 .strafeTo(new Vector2d(targetX, 54.0))
-
                 // "Close" servo
                 .stopAndAdd(servo1.moveServo(0.0))
-
                 // Return to shooting position
                 .strafeTo(new Vector2d(targetX, 40))
                 .splineToSplineHeading(new Pose2d(-20, 20, Math.toRadians(rot)), Math.toRadians(200))
