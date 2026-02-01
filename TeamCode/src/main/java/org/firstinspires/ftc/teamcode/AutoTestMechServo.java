@@ -1,19 +1,45 @@
 package org.firstinspires.ftc.teamcode;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
-import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 @Autonomous
-public class AutoTestMech extends LinearOpMode {
+public class AutoTestMechServo extends LinearOpMode {
 
     // Custom mechanism actions here (servo, non-drive motor, etc)
+    public class Servo1 {
+        // Pretend the servo is a claw mechanism
+        private Servo servo1;
+        public Servo1(HardwareMap hardwareMap) {
+            servo1 = hardwareMap.get(Servo.class, "servo1");
+        }
 
+        // I HAVE NO IDEA WHAT I'M DOING HERE!!
+        public class MoveServo implements Action {
+            private double pos;
+            public MoveServo(double pos) {
+                this.pos = pos;
+            }
+            @Override
+            public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+                servo1.setPosition(pos);
+                return false;
+            }
+        }
+        public Action moveServo(double pos) {
+            return new MoveServo(pos);
+        }
+    }
 
     @Override
     public void runOpMode() {
@@ -22,6 +48,7 @@ public class AutoTestMech extends LinearOpMode {
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
         // Hardware initialization
+        Servo1 servo1 = new Servo1(hardwareMap);
 
         // Adjust if balls are flying too far left/right
         int shootingRotationDeg = 140;
@@ -34,7 +61,7 @@ public class AutoTestMech extends LinearOpMode {
         // Chain together the movements
         driveChain = buildInitialMove(driveChain, shootingRotationDeg);
         for (int i = 0; i < 3; i++) {
-            driveChain = buildBallCollect(driveChain, shootingRotationDeg, xAdjustmentNum, i);
+            driveChain = buildBallCollect(driveChain, servo1, shootingRotationDeg, xAdjustmentNum, i);
         }
 
         waitForStart();
@@ -55,13 +82,25 @@ public class AutoTestMech extends LinearOpMode {
                 .waitSeconds(1);
     }
 
-    private static TrajectoryActionBuilder buildBallCollect(TrajectoryActionBuilder builder, int rot, double adj, int mult) {
+    private static TrajectoryActionBuilder buildBallCollect(TrajectoryActionBuilder builder, Servo1 servo1, int rot, double adj, int mult) {
         double targetX = -12.0+(adj*mult);
         return builder
+                // Move to start of line
                 .strafeToLinearHeading(new Vector2d(targetX, 20), Math.toRadians(90))
+
+                // "Open" servo
+                .stopAndAdd(servo1.moveServo(1.0))
+
+                // Drives forward to collect balls
                 .strafeTo(new Vector2d(targetX, 54.0))
+
+                // "Close" servo
+                .stopAndAdd(servo1.moveServo(0.0))
+
+                // Return to shooting position
                 .strafeTo(new Vector2d(targetX, 40))
                 .splineToSplineHeading(new Pose2d(-20, 20, Math.toRadians(rot)), Math.toRadians(200))
+                // Pretend its shooting
                 .waitSeconds(1);
     }
 }
