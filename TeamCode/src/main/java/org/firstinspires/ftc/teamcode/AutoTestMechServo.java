@@ -24,15 +24,16 @@ public class AutoTestMechServo extends LinearOpMode {
             servo1 = hardwareMap.get(Servo.class, "servo1");
         }
 
-        // I HAVE NO IDEA WHAT I'M DOING HERE!!
         public class MoveServo implements Action {
-            private double pos;
-            public MoveServo(double pos) {
-                this.pos = pos;
+            private double targetPos;
+            public MoveServo(double inputPos) {
+                // Sets targetPos to input from action call
+                this.targetPos = inputPos;
             }
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                servo1.setPosition(pos);
+                // Tell the servo to move
+                servo1.setPosition(targetPos);
                 return false;
             }
         }
