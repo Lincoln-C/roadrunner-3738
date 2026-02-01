@@ -27,8 +27,8 @@ public class AutoTestMechServo extends LinearOpMode {
         // I HAVE NO IDEA WHAT I'M DOING HERE!!
         public class MoveServo implements Action {
             private double pos;
-            public MoveServo(double pos) {
-                this.pos = pos;
+            public MoveServo(double position) {
+                this.pos = position;
             }
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
