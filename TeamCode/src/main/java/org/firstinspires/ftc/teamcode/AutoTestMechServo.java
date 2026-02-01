@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -17,22 +18,23 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class AutoTestMechServo extends LinearOpMode {
 
     // Custom mechanism actions here (servo, non-drive motor, etc)
-    public class Servo1 {
+    public static class Servo1 {
         // Pretend the servo is a claw mechanism
         private Servo servo1;
         public Servo1(HardwareMap hardwareMap) {
             servo1 = hardwareMap.get(Servo.class, "servo1");
         }
 
-        // I HAVE NO IDEA WHAT I'M DOING HERE!!
         public class MoveServo implements Action {
-            private double pos;
-            public MoveServo(double pos) {
-                this.pos = pos;
+            private final double targetPos;
+            public MoveServo(double inputPos) {
+                // Sets targetPos to input from action call
+                this.targetPos = inputPos;
             }
             @Override
             public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-                servo1.setPosition(pos);
+                // Tell the servo to move
+                servo1.setPosition(targetPos);
                 return false;
             }
         }
@@ -64,10 +66,14 @@ public class AutoTestMechServo extends LinearOpMode {
             driveChain = buildBallCollect(driveChain, servo1, shootingRotationDeg, xAdjustmentNum, i);
         }
 
+        Action mainAuto = driveChain.build();
+
         waitForStart();
 
         // Run the action
-        Actions.runBlocking(driveChain.build());
+        Actions.runBlocking(
+                mainAuto
+        );
 
         while (opModeIsActive()) {
             telemetry.update();
@@ -87,16 +93,14 @@ public class AutoTestMechServo extends LinearOpMode {
         return builder
                 // Move to start of line
                 .strafeToLinearHeading(new Vector2d(targetX, 20), Math.toRadians(90))
-
                 // "Open" servo
                 .stopAndAdd(servo1.moveServo(1.0))
-
+                .waitSeconds(0.3)
                 // Drives forward to collect balls
                 .strafeTo(new Vector2d(targetX, 54.0))
-
                 // "Close" servo
                 .stopAndAdd(servo1.moveServo(0.0))
-
+                .waitSeconds(0.3)
                 // Return to shooting position
                 .strafeTo(new Vector2d(targetX, 40))
                 .splineToSplineHeading(new Pose2d(-20, 20, Math.toRadians(rot)), Math.toRadians(200))
