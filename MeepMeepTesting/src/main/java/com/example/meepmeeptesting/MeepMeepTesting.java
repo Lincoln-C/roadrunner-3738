@@ -64,7 +64,7 @@ public class MeepMeepTesting {
     }
 
     private static TrajectoryActionBuilder buildBallCollect(TrajectoryActionBuilder builder, int rot, double adj, int mult) {
-        double targetX = -12.0 + (adj * mult);
+        double targetX = -12.0+(adj*mult);
         return builder
                 .strafeToLinearHeading(new Vector2d(targetX, 20), Math.toRadians(90))
                 .strafeTo(new Vector2d(targetX, 54.0))
