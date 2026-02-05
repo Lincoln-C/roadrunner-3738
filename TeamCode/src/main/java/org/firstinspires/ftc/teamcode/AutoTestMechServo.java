@@ -49,9 +49,6 @@ public class AutoTestMechServo extends LinearOpMode {
         Pose2d startPose = new Pose2d(0, 0, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
-        // Prep for calibration, accessed later in program
-        Pose2d calibFinishPose;
-
         // Hardware initialization
         Servo1 servo1 = new Servo1(hardwareMap);
 
@@ -59,11 +56,6 @@ public class AutoTestMechServo extends LinearOpMode {
         int shootingRotationDeg = 140;
         // Ball line offset
         int xAdjustmentNum = 24;
-
-        // Calibration action
-        /*Action calibrationAuto = drive.actionBuilder(startPose)
-                // TODO: CALIBRATION CODE HERE, IMPLEMENT LIMELIGHT???
-                .build();*/
 
         // Create the action chain with initial position
         TrajectoryActionBuilder driveChain = drive.actionBuilder(startPose);
@@ -80,10 +72,7 @@ public class AutoTestMechServo extends LinearOpMode {
 
         // Run the action
         Actions.runBlocking(
-            new SequentialAction(
-                //calibrationAuto,
                 mainAuto
-            )
         );
 
         while (opModeIsActive()) {
