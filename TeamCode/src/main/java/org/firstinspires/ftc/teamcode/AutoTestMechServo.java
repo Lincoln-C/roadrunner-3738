@@ -5,6 +5,7 @@ import androidx.annotation.NonNull;
 import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.Pose2d;
+import com.acmerobotics.roadrunner.SequentialAction;
 import com.acmerobotics.roadrunner.TrajectoryActionBuilder;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
@@ -48,6 +49,9 @@ public class AutoTestMechServo extends LinearOpMode {
         Pose2d startPose = new Pose2d(0, 0, Math.toRadians(90));
         MecanumDrive drive = new MecanumDrive(hardwareMap, startPose);
 
+        // Prep for calibration, accessed later in program
+        Pose2d calibFinishPose;
+
         // Hardware initialization
         Servo1 servo1 = new Servo1(hardwareMap);
 
@@ -55,6 +59,11 @@ public class AutoTestMechServo extends LinearOpMode {
         int shootingRotationDeg = 140;
         // Ball line offset
         int xAdjustmentNum = 24;
+
+        // Calibration action
+        /*Action calibrationAuto = drive.actionBuilder(startPose)
+                // TODO: CALIBRATION CODE HERE, IMPLEMENT LIMELIGHT???
+                .build();*/
 
         // Create the action chain with initial position
         TrajectoryActionBuilder driveChain = drive.actionBuilder(startPose);
@@ -65,10 +74,17 @@ public class AutoTestMechServo extends LinearOpMode {
             driveChain = buildBallCollect(driveChain, servo1, shootingRotationDeg, xAdjustmentNum, i);
         }
 
+        Action mainAuto = driveChain.build();
+
         waitForStart();
 
         // Run the action
-        Actions.runBlocking(driveChain.build());
+        Actions.runBlocking(
+            new SequentialAction(
+                //calibrationAuto,
+                mainAuto
+            )
+        );
 
         while (opModeIsActive()) {
             telemetry.update();
