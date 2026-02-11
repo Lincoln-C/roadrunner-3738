@@ -18,7 +18,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 public class AutoTestMechServo extends LinearOpMode {
 
     // Custom mechanism actions here (servo, non-drive motor, etc)
-    public class Servo1 {
+    public static class Servo1 {
         // Pretend the servo is a claw mechanism
         private Servo servo1;
         public Servo1(HardwareMap hardwareMap) {
@@ -26,7 +26,7 @@ public class AutoTestMechServo extends LinearOpMode {
         }
 
         public class MoveServo implements Action {
-            private double targetPos;
+            private final double targetPos;
             public MoveServo(double inputPos) {
                 // Sets targetPos to input from action call
                 this.targetPos = inputPos;
