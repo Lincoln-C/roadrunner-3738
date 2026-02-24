@@ -25,7 +25,7 @@ public class FieldRobotCentricMech extends LinearOpMode {
 
 	// Fixes imperfect strafing, adjust as needed
 	private static final double STRAFE_MULTIPLIER = 1.1;
-	private static final double CONTROLLER_DEADZONE = 0.05;
+	private static final double CONTROLLER_DEADZONE = 0.04;
 
 	// DRIVE MODE: 0 for field-centric, 1 for robot-centric - WHEN IN DOUBT set to 1
 	private static final int DRIVE_MODE = 0;
