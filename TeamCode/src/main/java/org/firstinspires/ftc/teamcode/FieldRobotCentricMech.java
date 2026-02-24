@@ -89,7 +89,7 @@ public class FieldRobotCentricMech extends LinearOpMode {
             }
 
 			// Drive robot
-			if (DRIVE_MODE == 0) {
+			if (driveMode == 0) {
 				driveFieldCentric(driveX, driveY, turn);
 			} else {
 				driveRobotCentric(driveX, driveY, turn);
