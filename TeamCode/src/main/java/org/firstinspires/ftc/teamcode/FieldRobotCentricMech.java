@@ -25,10 +25,11 @@ public class FieldRobotCentricMech extends LinearOpMode {
 
 	// Fixes imperfect strafing, adjust as needed
 	private static final double STRAFE_MULTIPLIER = 1.1;
-	private static final double CONTROLLER_DEADZONE = 0.04;
+	private static final double CONTROLLER_DEADZONE = 0.07;
 
-	// DRIVE MODE: 0 for field-centric, 1 for robot-centric - WHEN IN DOUBT set to 1
-	private static final int DRIVE_MODE = 0;
+	// DEFAULT DRIVE MODE: 0 for field-centric, 1 for robot-centric
+	private int driveMode = 0;
+	private boolean lastDpadUp = false;
 
 	//// END GLOBAL VARS ////
 
@@ -76,6 +77,12 @@ public class FieldRobotCentricMech extends LinearOpMode {
             double driveY = -gamepad1.left_stick_y;
             double turn = gamepad1.right_stick_x;
 			
+			// Swap drive mode on keypress
+			if (gamepad1.dpad_up && !lastDpadUp) {
+				driveMode = (driveMode == 0) ? 1 : 0;
+			}
+			lastDpadUp = gamepad1.dpad_up;
+
 			// Reset imu direction on button press
             if (gamepad1.options) {
                 imu.resetYaw();
@@ -156,6 +163,8 @@ public class FieldRobotCentricMech extends LinearOpMode {
 		YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
 		AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
 
+		telemetry.addData("DRIVE MODE", driveMode == 0 ? "0 (Field-Centric)" : "1 (Robot-Centric)");
+		telemetry.addLine("Press D-Pad Up to Switch");
 		telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
 		telemetry.addData("Pitch (X)", "%.2f Deg.", orientation.getPitch(AngleUnit.DEGREES));
 		telemetry.addData("Roll (Y)", "%.2f Deg.\n", orientation.getRoll(AngleUnit.DEGREES));
