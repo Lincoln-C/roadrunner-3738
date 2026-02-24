@@ -25,7 +25,7 @@ public class FieldRobotCentricMech extends LinearOpMode {
 
 	// Fixes imperfect strafing, adjust as needed
 	private static final double STRAFE_MULTIPLIER = 1.1;
-	private static final double CONTROLLER_DEADZONE = 0.1;
+	private static final double CONTROLLER_DEADZONE = 0.05;
 
 	// DRIVE MODE: 0 for field-centric, 1 for robot-centric - WHEN IN DOUBT set to 1
 	private static final int DRIVE_MODE = 0;
@@ -50,16 +50,16 @@ public class FieldRobotCentricMech extends LinearOpMode {
 		rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-		leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		/*leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		leftBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
 
 		//// Reverse direction as needed ////
-		//leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
-		//leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
-		rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
-		rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
+		leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
+		leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
+		//rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
+		//rightBack.setDirection(DcMotorSimple.Direction.REVERSE);
         
         telemetry.addData("Status", "Initialized");
         telemetry.update();
