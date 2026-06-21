@@ -21,11 +21,7 @@ public class MecanumDriveTrain {
     // Enum is a nice way to select a robot drive mode
     enum DriveMode {
         FIELD_CENTRIC,
-        ROBOT_CENTRIC;
-
-        public DriveMode switchMode() {
-            return this == FIELD_CENTRIC ? ROBOT_CENTRIC : FIELD_CENTRIC;
-        }
+        ROBOT_CENTRIC
     }
 
     //// CONSTANTS ////
@@ -112,7 +108,11 @@ public class MecanumDriveTrain {
      * This allows the driver to change steering during operation.
      */
     public void toggleDriveMode() {
-        driveMode = driveMode.switchMode();
+        if (this.driveMode == DriveMode.FIELD_CENTRIC) {
+            this.driveMode = DriveMode.ROBOT_CENTRIC;
+        } else {
+            this.driveMode = DriveMode.FIELD_CENTRIC;
+        }
     }
 
     /**
