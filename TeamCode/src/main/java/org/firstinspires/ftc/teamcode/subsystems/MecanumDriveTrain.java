@@ -9,6 +9,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 
+/**
+ * Represents a four-motor Mecanum drivetrain on a robot.
+ * <p>
+ * This class handles hardware maps, initialization, and movement math required to drive a robot in
+ * field-centric and robot-centric modes.
+ * </p>
+ * It also uses the internal IMU for orientation data.
+ */
 public class MecanumDriveTrain {
     // Enum is a nice way to select a robot drive mode
     enum DriveMode {
@@ -37,6 +45,11 @@ public class MecanumDriveTrain {
 
     // This is a constructor, it gets the stuff from outside so it can do stuff inside this file.
     // Yes I know that is a bad explanation.
+
+    /**
+     * Sets up the motors and stuff using the provided robot hardware info.
+     * @param hardwareMap Just say hardwareMap in the parenthesis for it to work.
+     */
     public MecanumDriveTrain(HardwareMap hardwareMap) {
         // Map motors to driver hub names
         leftBack = hardwareMap.get(DcMotor.class, "leftBack");
@@ -78,14 +91,39 @@ public class MecanumDriveTrain {
      * AND NOTHING ELSE.
      * How simple is that???
      */
+
+    /**
+     * Resets the IMU position.
+     * <br>
+     * If in field-centric drive mode, this sets the front of the robot,
+     * so if the stick is pressed forward the robot will drive straight ahead.
+     * <br>
+     * This is helpful if someone moves their body to another location and is still driving.
+     */
     public void imuResetYaw() {
         imu.resetYaw();
     }
 
+    /**
+     * Toggles the current drive mode.
+     * <br>
+     * Switches the control state between field-centric and robot-centric driving.
+     * <br>
+     * This allows the driver to change steering during operation.
+     */
     public void toggleDriveMode() {
         driveMode = driveMode.switchMode();
     }
 
+    /**
+     * Retrieves the current drive mode.
+     * <br>
+     * Looks at the drive mode and returns either "Field-Centric" or "Robot-Centric".
+     * <br>
+     * This is used for telemetry output on the driver station.
+     *
+     * @return A string stating the active driving configuration.
+     */
     public String getDriveMode() {
         if (this.driveMode == DriveMode.FIELD_CENTRIC) {
             return "Field-Centric";
@@ -94,7 +132,13 @@ public class MecanumDriveTrain {
         }
     }
 
-    // Drive method
+    /**
+     * Tells the robot "drive using these stick inputs".
+     *
+     * @param driveX Strafe power input
+     * @param driveY Forward/back power input
+     * @param turn Rotational power input
+     */
     public void drive(double driveX, double driveY, double turn) {
         if (driveMode == DriveMode.FIELD_CENTRIC) {
             driveFieldCentric(driveX, driveY, turn);
@@ -104,10 +148,24 @@ public class MecanumDriveTrain {
     }
 
     // IMU telemetry
+
+    /**
+     * Gets the angles of the driver hub.
+     * <br>
+     * For example, you can use this to detect if the robot is on a ramp.
+     * @return Orientation object with orientation data.
+     */
     public YawPitchRollAngles getRobotYawPitchRollAngles() {
         return imu.getRobotYawPitchRollAngles();
     }
 
+    /**
+     * Gets the rotational velocity (speed) of the robot.
+     * <br>
+     * For example, you can use this to detect if the robot is rotating fast or slow (like if it
+     * flips over, oh no!).
+     * @return Angular velocity object (data of how fast it's turning around the three axes).
+     */
     public AngularVelocity getRobotAngularVelocity() {
         return imu.getRobotAngularVelocity(AngleUnit.DEGREES);
     }
