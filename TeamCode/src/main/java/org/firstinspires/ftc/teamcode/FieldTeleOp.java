@@ -47,7 +47,7 @@ public class FieldTeleOp extends LinearOpMode {
             driveTrain.drive(driveX, driveY, turn);
 
             // Update telemetry
-			updateDriveTelemetry();
+            updateDriveTelemetry();
         }
     }
 
@@ -55,7 +55,7 @@ public class FieldTeleOp extends LinearOpMode {
     private void updateDriveTelemetry() {
 		// Retrieve rotational angles and velocities
 		YawPitchRollAngles orientation = driveTrain.getRobotYawPitchRollAngles();
-		AngularVelocity angularVelocity = driveTrain.getRobotAngularVelocity(AngleUnit.DEGREES);
+		AngularVelocity angularVelocity = driveTrain.getRobotAngularVelocity();
 
 		telemetry.addData("DRIVE MODE", driveTrain.getDriveMode());
 		telemetry.addLine("Press D-Pad Up to Switch");
