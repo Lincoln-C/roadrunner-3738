@@ -27,6 +27,12 @@ public class MecanumDriveTrain {
     // CONSTANTS
     private static final double STRAFE_MULTIPLIER = 1.1;
 	private static final double CONTROLLER_DEADZONE = 0.07;
+	// Driver station names
+	public static final String MOTOR_LEFT_BACK = "leftBack";
+	public static final String MOTOR_RIGHT_BACK = "rightBack";
+	public static final String MOTOR_RIGHT_FRONT = "rightFront";
+	public static final String MOTOR_LEFT_FRONT = "leftFront";
+	public static final String IMU_NAME = "imu";
 
     // Set initial drive mode here
     DriveMode driveMode = DriveMode.FIELD_CENTRIC;
@@ -47,12 +53,13 @@ public class MecanumDriveTrain {
      */
     public MecanumDriveTrain(HardwareMap hardwareMap) {
         // Map motors to driver hub names
-        leftBack = hardwareMap.get(DcMotor.class, "leftBack");
-        rightBack = hardwareMap.get(DcMotor.class, "rightBack");
-        rightFront = hardwareMap.get(DcMotor.class, "rightFront");
-        leftFront = hardwareMap.get(DcMotor.class, "leftFront");
+        leftBack = hardwareMap.get(DcMotor.class, MOTOR_LEFT_BACK);
+        rightBack = hardwareMap.get(DcMotor.class, MOTOR_RIGHT_BACK);
+        rightFront = hardwareMap.get(DcMotor.class, MOTOR_RIGHT_FRONT);
+        leftFront = hardwareMap.get(DcMotor.class, MOTOR_LEFT_FRONT);
 
-        imu = hardwareMap.get(IMU.class, "imu");
+        imu = hardwareMap.get(IMU.class, IMU_NAME);
+
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
                 RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
