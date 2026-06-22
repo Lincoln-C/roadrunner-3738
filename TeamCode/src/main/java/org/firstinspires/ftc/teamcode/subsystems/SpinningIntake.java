@@ -16,6 +16,8 @@ public class SpinningIntake {
 
     // CONSTANTS
     private static final double INTAKE_MAX_POWER = 1.0;
+    // Driver station names
+    private static final String MOTOR_INTAKE = "intake";
 
     // Tracks the current intake speed
     private double motorSpeed = 0;
@@ -24,7 +26,7 @@ public class SpinningIntake {
     private final DcMotor intake;
 
     public SpinningIntake(HardwareMap hardwareMap) {
-        intake = hardwareMap.get(DcMotor.class, "intake");
+        intake = hardwareMap.get(DcMotor.class, MOTOR_INTAKE);
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
