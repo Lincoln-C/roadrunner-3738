@@ -24,10 +24,9 @@ public class MecanumDriveTrain {
         ROBOT_CENTRIC
     }
 
-    //// CONSTANTS ////
+    // CONSTANTS
     private static final double STRAFE_MULTIPLIER = 1.1;
 	private static final double CONTROLLER_DEADZONE = 0.07;
-    //// END CONSTANTS ////
 
     // Set initial drive mode here
     DriveMode driveMode = DriveMode.FIELD_CENTRIC;
@@ -70,7 +69,7 @@ public class MecanumDriveTrain {
 		rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 		rightBack.setMode(DcMotor.RunMode.RUN_USING_ENCODER);*/
 
-		//// Reverse direction as needed ////
+		// Reverse direction as needed
 		leftFront.setDirection(DcMotorSimple.Direction.REVERSE);
 		leftBack.setDirection(DcMotorSimple.Direction.REVERSE);
 		//rightFront.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -170,7 +169,7 @@ public class MecanumDriveTrain {
         return imu.getRobotAngularVelocity(AngleUnit.DEGREES);
     }
 
-    //// INTERNAL METHODS ////
+    // INTERNAL METHODS
     // These are inaccessible, you cannot call them manually from the TeleOp or Auton.
     // These are for organizational purposes.
     private void driveFieldCentric(double driveX, double driveY, double turn) {
