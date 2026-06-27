@@ -72,7 +72,7 @@ public class SpinningIntake {
     private void updateMotorPower() {
         intake.setPower(motorSpeed);
         if (!ignore_intake2) {
-            intake.setPower(-motorSpeed);
+            intake2.setPower(-motorSpeed);
         }
     }
 }
