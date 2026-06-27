@@ -26,10 +26,16 @@ public class SpinningIntake {
 
     private final DcMotor intake;
     private final DcMotor intake2;
+    private boolean ignore_intake2 = false;
 
     public SpinningIntake(HardwareMap hardwareMap) {
         intake = hardwareMap.get(DcMotor.class, MOTOR_INTAKE);
-        intake2 = hardwareMap.get(DcMotor.class, MOTOR_INTAKE_2);
+        try {
+            intake2 = hardwareMap.get(DcMotor.class, MOTOR_INTAKE_2);
+            intake2.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        } catch (Exception e) {
+            ignore_intake2 = true;
+        }
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
@@ -65,6 +71,8 @@ public class SpinningIntake {
     // INTERNAL METHODS
     private void updateMotorPower() {
         intake.setPower(motorSpeed);
-        intake.setPower(-motorSpeed);
+        if (!ignore_intake2) {
+            intake.setPower(-motorSpeed);
+        }
     }
 }
