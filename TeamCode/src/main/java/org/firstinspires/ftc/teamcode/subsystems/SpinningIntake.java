@@ -11,22 +11,25 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class SpinningIntake {
     /*
      * TODO: Fix code skeleton
-     *  - Add support for multiple intake motors - currently assuming one
+     *  - Add support for multiple intake motors - currently assuming one (in progress)
      */
 
     // CONSTANTS
     private static final double INTAKE_MAX_POWER = 1.0;
     // Driver station names
     private static final String MOTOR_INTAKE = "intake";
+    private static final String MOTOR_INTAKE_2 = "intake 2";
 
     // Tracks the current intake speed
     private double motorSpeed = 0;
     private final double motorIncrement = 0.001;
 
     private final DcMotor intake;
+    private final DcMotor intake2;
 
     public SpinningIntake(HardwareMap hardwareMap) {
         intake = hardwareMap.get(DcMotor.class, MOTOR_INTAKE);
+        intake2 = hardwareMap.get(DcMotor.class, MOTOR_INTAKE_2);
 
         intake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
     }
@@ -62,5 +65,6 @@ public class SpinningIntake {
     // INTERNAL METHODS
     private void updateMotorPower() {
         intake.setPower(motorSpeed);
+        intake.setPower(-motorSpeed);
     }
 }
