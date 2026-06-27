@@ -25,7 +25,7 @@ public class SpinningIntake {
     private final double motorIncrement = 0.001;
 
     private final DcMotor intake;
-    private final DcMotor intake2;
+    private DcMotor intake2 = null;
     private boolean ignore_intake2 = false;
 
     public SpinningIntake(HardwareMap hardwareMap) {
@@ -71,7 +71,7 @@ public class SpinningIntake {
     // INTERNAL METHODS
     private void updateMotorPower() {
         intake.setPower(motorSpeed);
-        if (!ignore_intake2) {
+        if (!ignore_intake2 && intake2 != null) {
             intake2.setPower(-motorSpeed);
         }
     }
