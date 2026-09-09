@@ -11,7 +11,7 @@ import com.qualcomm.robotcore.hardware.HardwareMap;
 public class SpinningIntake {
     /*
      * TODO: Fix code skeleton
-     *  - Add support for multiple intake motors - currently assuming one (in progress)
+     *  - Add support for multiple intake motors - (it can do two motors but we havent tested this so... *shrug*)
      */
 
     // CONSTANTS
