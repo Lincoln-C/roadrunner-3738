@@ -8,7 +8,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 import org.firstinspires.ftc.teamcode.subsystems.MecanumDriveTrain;
 
 @TeleOp
-public class FieldTeleOp extends LinearOpMode {
+public class MecanumExampleTeleOp extends LinearOpMode {
     // The purpose of this file is to control the robot systems with inputs.
     // NO hardware maps should be here, they are ALREADY SET UP.
 
