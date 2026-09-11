@@ -22,6 +22,7 @@ public class RobotConstants {
 
     // ---------- ROBOT MISC ELECTRONICS ----------
     public static final String IMU_NAME = "imu";
+    public static final String MOTOR_INTAKE = "intake";
 
         // limelight?
 

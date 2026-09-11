@@ -27,7 +27,7 @@ public class TankExampleTeleOp extends LinearOpMode {
     private TankDriveTrain driveTrain;
 
     // Prevent holding down switch button from cycling list very fast
-    private boolean lastBump = false;
+    private boolean lastDpadUp = false;
 
     @Override
     public void runOpMode() {
@@ -42,7 +42,7 @@ public class TankExampleTeleOp extends LinearOpMode {
 
         while (opModeIsActive()) {
             // Switch drive modes
-            if (gamepad1.dpad_up && !lastBump) {
+            if (gamepad1.dpad_up && !lastDpadUp) {
                 switch (gamepadStickMode) {
                     case STANDARD: gamepadStickMode = DriveControlMode.LEFT_HANDED; break;
                     case LEFT_HANDED: gamepadStickMode = DriveControlMode.ARCADE_LEFT; break;
@@ -50,7 +50,7 @@ public class TankExampleTeleOp extends LinearOpMode {
                     case TANK_TRADITIONAL: gamepadStickMode = DriveControlMode.STANDARD; break;
                 }
             }
-            lastBump = gamepad1.dpad_up;
+            lastDpadUp = gamepad1.dpad_up;
 
             double driveY = 0;
             double turn = 0;
