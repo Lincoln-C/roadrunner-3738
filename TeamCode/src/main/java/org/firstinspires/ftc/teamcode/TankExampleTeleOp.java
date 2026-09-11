@@ -13,8 +13,21 @@ public class TankExampleTeleOp extends LinearOpMode {
     // The purpose of this file is to control the robot systems with inputs.
     // NO hardware maps should be here, they are ALREADY SET UP.
 
-    // Initializing systems
+    // Enum for drive modes
+    public enum DriveControlMode {
+        STANDARD,
+        LEFT_HANDED,
+        ARCADE_LEFT,
+        TANK_TRADITIONAL
+    }
+
+    // Set default drive mode
+    private DriveControlMode gamepadStickMode = DriveControlMode.STANDARD;
+
     private TankDriveTrain driveTrain;
+
+    // Prevent holding down switch button from cycling list very fast
+    private boolean lastBump = false;
 
     @Override
     public void runOpMode() {
@@ -28,15 +41,53 @@ public class TankExampleTeleOp extends LinearOpMode {
         waitForStart();
 
         while (opModeIsActive()) {
-            double driveY = -gamepad1.left_stick_y;
-            double turn = gamepad1.right_stick_x;
+            // Switch drive modes
+            if (gamepad1.dpad_up && !lastBump) {
+                switch (gamepadStickMode) {
+                    case STANDARD: gamepadStickMode = DriveControlMode.LEFT_HANDED; break;
+                    case LEFT_HANDED: gamepadStickMode = DriveControlMode.ARCADE_LEFT; break;
+                    case ARCADE_LEFT: gamepadStickMode = DriveControlMode.TANK_TRADITIONAL; break;
+                    case TANK_TRADITIONAL: gamepadStickMode = DriveControlMode.STANDARD; break;
+                }
+            }
+            lastBump = gamepad1.dpad_up;
+
+            double driveY = 0;
+            double turn = 0;
+
+            switch(gamepadStickMode) {
+                case STANDARD:
+                    driveY = -gamepad1.left_stick_y;
+                    turn = gamepad1.right_stick_x;
+                    break;
+
+                case LEFT_HANDED:
+                    driveY = -gamepad1.right_stick_y;
+                    turn = gamepad1.left_stick_x;
+                    break;
+
+                case ARCADE_LEFT:
+                    // Single stick control on the left side
+                    driveY = -gamepad1.left_stick_y;
+                    turn = gamepad1.left_stick_x;
+                    break;
+
+                case TANK_TRADITIONAL:
+                    double leftPower = -gamepad1.left_stick_y;
+                    double rightPower = -gamepad1.right_stick_y;
+
+                    // Turn tank stick drive into driveTrain format
+                    driveY = (leftPower + rightPower) / 2.0;
+                    turn = (leftPower - rightPower) / 2.0;
+                    break;
+            }
 
 			// Reset imu direction on button press
             if (gamepad1.options) {
                 driveTrain.imuResetYaw();
             }
 
-			// Drive robot
+            // Drive robot
             driveTrain.drive(driveY, turn);
 
             // Update telemetry
@@ -50,6 +101,8 @@ public class TankExampleTeleOp extends LinearOpMode {
         YawPitchRollAngles orientation = driveTrain.getRobotYawPitchRollAngles();
         AngularVelocity angularVelocity = driveTrain.getRobotAngularVelocity();
 
+        telemetry.addData("Current drive mode", gamepadStickMode);
+        telemetry.addLine();
         telemetry.addData("Left motor power", "%.2f", driveTrain.getLeftPower());
         telemetry.addData("Right motor power", "%.2f", driveTrain.getRightPower());
         telemetry.addLine();
