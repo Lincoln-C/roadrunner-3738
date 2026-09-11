@@ -8,6 +8,7 @@ import com.qualcomm.robotcore.hardware.IMU;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
+import org.firstinspires.ftc.teamcode.constants.RobotConstants;
 
 /**
  * Represents a four-motor Mecanum drivetrain on a robot.
@@ -23,16 +24,6 @@ public class MecanumDriveTrain {
         FIELD_CENTRIC,
         ROBOT_CENTRIC
     }
-
-    // CONSTANTS
-    private static final double STRAFE_MULTIPLIER = 1.1;
-	private static final double CONTROLLER_DEADZONE = 0.07;
-	// Driver station names
-	public static final String MOTOR_LEFT_BACK = "leftBack";
-	public static final String MOTOR_RIGHT_BACK = "rightBack";
-	public static final String MOTOR_RIGHT_FRONT = "rightFront";
-	public static final String MOTOR_LEFT_FRONT = "leftFront";
-	public static final String IMU_NAME = "imu";
 
     // Set initial drive mode here
     DriveMode driveMode = DriveMode.FIELD_CENTRIC;
@@ -53,12 +44,12 @@ public class MecanumDriveTrain {
      */
     public MecanumDriveTrain(HardwareMap hardwareMap) {
         // Map motors to driver hub names
-        leftBack = hardwareMap.get(DcMotor.class, MOTOR_LEFT_BACK);
-        rightBack = hardwareMap.get(DcMotor.class, MOTOR_RIGHT_BACK);
-        rightFront = hardwareMap.get(DcMotor.class, MOTOR_RIGHT_FRONT);
-        leftFront = hardwareMap.get(DcMotor.class, MOTOR_LEFT_FRONT);
+        leftBack = hardwareMap.get(DcMotor.class, RobotConstants.MOTOR_LEFT_BACK);
+        rightBack = hardwareMap.get(DcMotor.class, RobotConstants.MOTOR_RIGHT_BACK);
+        rightFront = hardwareMap.get(DcMotor.class, RobotConstants.MOTOR_RIGHT_FRONT);
+        leftFront = hardwareMap.get(DcMotor.class, RobotConstants.MOTOR_LEFT_FRONT);
 
-        imu = hardwareMap.get(IMU.class, IMU_NAME);
+        imu = hardwareMap.get(IMU.class, RobotConstants.IMU_NAME);
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
                 RevHubOrientationOnRobot.LogoFacingDirection.UP,
@@ -67,7 +58,7 @@ public class MecanumDriveTrain {
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         leftBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-		rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        rightFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 		rightBack.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         // If the encoders are present, uncomment this
@@ -184,7 +175,8 @@ public class MecanumDriveTrain {
         driveY = applyDeadzone(driveY);
         turn = applyDeadzone(turn);
 
-        driveX *= STRAFE_MULTIPLIER;
+        turn *= RobotConstants.TURN_MULTIPLIER;
+        driveX *= RobotConstants.STRAFE_MULTIPLIER;
 
         double botHeading = imu.getRobotYawPitchRollAngles().getYaw(AngleUnit.RADIANS);
 
@@ -200,7 +192,8 @@ public class MecanumDriveTrain {
         driveY = applyDeadzone(driveY);
         turn = applyDeadzone(turn);
 
-        driveX *= STRAFE_MULTIPLIER;
+        turn *= RobotConstants.TURN_MULTIPLIER;
+        driveX *= RobotConstants.STRAFE_MULTIPLIER;
 
         setMotorOutputs(driveX, driveY, turn);
     }
@@ -211,14 +204,14 @@ public class MecanumDriveTrain {
 		double leftBackPower = driveY - driveX + turn;
 		double rightBackPower = driveY + driveX - turn;
 
-		double maxPower = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),
+		double powerClip = Math.max(Math.max(Math.abs(leftFrontPower), Math.abs(rightFrontPower)),
                 Math.max(Math.abs(leftBackPower), Math.abs(rightBackPower)));
 
-		if (maxPower > 1.0) {
-			leftFrontPower /= maxPower;
-			rightFrontPower /= maxPower;
-			leftBackPower /= maxPower;
-			rightBackPower /= maxPower;
+		if (powerClip > 1.0) {
+			leftFrontPower /= powerClip;
+			rightFrontPower /= powerClip;
+			leftBackPower /= powerClip;
+			rightBackPower /= powerClip;
 		}
 
 		leftFront.setPower(leftFrontPower);
@@ -228,7 +221,7 @@ public class MecanumDriveTrain {
     }
 
     private double applyDeadzone(double input) {
-        if (Math.abs(input) < CONTROLLER_DEADZONE) {
+        if (Math.abs(input) < RobotConstants.CONTROLLER_DEADZONE) {
             return 0;
         } else {
             return input;
