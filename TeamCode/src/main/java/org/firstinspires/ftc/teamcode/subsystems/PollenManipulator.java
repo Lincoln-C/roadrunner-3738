@@ -40,15 +40,26 @@ public class PollenManipulator {
     }
 
     // State setter and getter
+
+    /**
+     * Set manipulator state
+     * @param state See State enum
+     */
     public void setState(State state) {
         this.currentState = state;
     }
 
+    /**
+     * Get manipulator state (for telemetry)
+     * @return Current state as a string
+     */
     public State getCurrentState() {
         return this.currentState;
     }
 
-    // Set power based on currentState
+    /**
+     * Tells the robot to set the intake power to current state
+     */
     public void run() {
         switch (currentState) {
             case INTAKING: pollenIntake.setPower(1.0); break;
