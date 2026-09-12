@@ -52,8 +52,8 @@ public class MecanumDriveTrain {
         imu = hardwareMap.get(IMU.class, RobotConstants.IMU_NAME);
 
         IMU.Parameters parameters = new IMU.Parameters(new RevHubOrientationOnRobot(
-                RevHubOrientationOnRobot.LogoFacingDirection.UP,
-                RevHubOrientationOnRobot.UsbFacingDirection.FORWARD));
+                RobotConstants.IMU_LOGO_DIRECTION,
+                RobotConstants.IMU_USB_DIRECTION));
         imu.initialize(parameters);
 
         leftFront.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
