@@ -31,45 +31,15 @@ public class AutoRRExperimental extends LinearOpMode {
 
         // Hardware initialization
 
-        // Adjust if balls are flying too far left/right
-        int shootingRotationDeg = 140;
-        // Ball line offset
-        int xAdjustmentNum = 24;
-
-        // Create the action chain with initial position
-        TrajectoryActionBuilder driveChain = drive.actionBuilder(startPose);
-
-        // Chain together the movements
-        driveChain = buildInitialMove(driveChain, shootingRotationDeg);
-        for (int i = 0; i < 3; i++) {
-            driveChain = buildBallCollect(driveChain, shootingRotationDeg, xAdjustmentNum, i);
-        }
+        // Action thing here
 
         waitForStart();
 
         // Run the action
-        Actions.runBlocking(driveChain.build());
+        //Actions.runBlocking(action);
 
         while (opModeIsActive()) {
             telemetry.update();
         }
-    }
-
-    // Abstracted methods
-    private static TrajectoryActionBuilder buildInitialMove(TrajectoryActionBuilder builder, int rot) {
-        return builder
-                .strafeToSplineHeading(new Vector2d(-53, 48), Math.toRadians(310))
-                .strafeToLinearHeading(new Vector2d(-20, 20), Math.toRadians(rot))
-                .waitSeconds(1);
-    }
-
-    private static TrajectoryActionBuilder buildBallCollect(TrajectoryActionBuilder builder, int rot, double adj, int mult) {
-        double targetX = -12.0+(adj*mult);
-        return builder
-                .strafeToLinearHeading(new Vector2d(targetX, 20), Math.toRadians(90))
-                .strafeTo(new Vector2d(targetX, 54.0))
-                .strafeTo(new Vector2d(targetX, 40))
-                .splineToSplineHeading(new Pose2d(-20, 20, Math.toRadians(rot)), Math.toRadians(200))
-                .waitSeconds(1);
     }
 }

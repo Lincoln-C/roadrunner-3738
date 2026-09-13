@@ -24,6 +24,7 @@ public class RobotConstants {
 
     // ---------- ROBOT MISC ELECTRONICS ----------
     public static final String IMU_NAME = "imu";
+    public static final String LIMELIGHT_NAME = "limelight";
 
     // To adjust logo and usb see
     // https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html
@@ -33,7 +34,8 @@ public class RobotConstants {
             RevHubOrientationOnRobot.UsbFacingDirection.UP;
     public static final String MOTOR_INTAKE = "intake";
 
-        // limelight?
+    // ---------- LIMELIGHT NUMBERS ----------
+    public static final double LL_DEGREES_ROTATION_ALIGNED = 1.5;
 
     // ---------- GAMEPAD ----------
     public static final double CONTROLLER_DEADZONE = 0.07;
