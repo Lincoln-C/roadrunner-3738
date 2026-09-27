@@ -33,6 +33,12 @@ public class RobotConstants {
     public static final RevHubOrientationOnRobot.UsbFacingDirection IMU_USB_DIRECTION =
             RevHubOrientationOnRobot.UsbFacingDirection.BACKWARD;
     public static final String MOTOR_INTAKE = "intake";
+    public static final String SERVO_FEEDER = "feeder";
+    public static final String MOTOR_FLY = "flywheel";
+
+    // This depends on the motor used. Assuming REV HD Hex Motor
+    public static final double FLYWHEEL_TICKS_PER_REVOLUTION = 28.0;
+    public static final double FLYWHEEL_SPINUP_TIME_SEC = 3.0;
 
     // ---------- LIMELIGHT NUMBERS ----------
     public static final double LL_DEGREES_ROTATION_ALIGNED = 1.5;
@@ -44,5 +50,8 @@ public class RobotConstants {
     // ---------- ROBOT SPEEDS ----------
     public static final double STRAFE_MULTIPLIER = 1.1;
     public static final double TURN_MULTIPLIER = 0.7;
+    public static final double INTAKE_SPEED = 0.5;
+    public static final double FEEDER_SPEED = 1.0;
+    public static final double FLYWHEEL_TARGET_RPM = 3000;
 
 }

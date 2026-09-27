@@ -17,6 +17,9 @@ public class StarterBot2627 extends LinearOpMode {
     private TankDriveTrain driveTrain;
     private PollenManipulator pollenManipulator;
 
+    // Statuses
+    private boolean xPressed = false;
+
     @Override
     public void runOpMode() {
         // Create instances of systems
@@ -34,10 +37,27 @@ public class StarterBot2627 extends LinearOpMode {
             double turn = gamepad1.right_stick_x;
 
             // Switch pollen manipulator modes
-            if (gamepad1.a) { pollenManipulator.setState(PollenManipulator.State.INTAKING); }
-            else if (gamepad1.b) { pollenManipulator.setState(PollenManipulator.State.EJECTING); }
-            else if (driveY < -0.2) { pollenManipulator.setState(PollenManipulator.State.HOLD_REVERSE); }
-            else { pollenManipulator.setState(PollenManipulator.State.HOLD_STATIC); }
+            if (gamepad1.a) {
+                // Intake pollen
+                pollenManipulator.setState(PollenManipulator.State.INTAKING);
+            } else if (gamepad1.x && !xPressed) {
+                xPressed = true;
+
+                // Spin up and launch if hold or intaking
+                if (pollenManipulator.getCurrentState() == PollenManipulator.State.HOLD
+                        || pollenManipulator.getCurrentState() == PollenManipulator.State.INTAKING) {
+                    pollenManipulator.setState(PollenManipulator.State.FLY_SPINUP);
+                }
+            } else if (!gamepad1.a && !gamepad1.x) {
+                // If not pushing x and if not intaking or launching, stop moving
+                if (pollenManipulator.getCurrentState() != PollenManipulator.State.FLY_SPINUP
+                        && pollenManipulator.getCurrentState() != PollenManipulator.State.LAUNCH) {
+                    pollenManipulator.setState(PollenManipulator.State.HOLD);
+                }
+            }
+
+            // Update launch button status
+            xPressed = gamepad1.x;
 
             // Reset imu direction on button press
             if (gamepad1.options) {
@@ -59,7 +79,7 @@ public class StarterBot2627 extends LinearOpMode {
         YawPitchRollAngles orientation = driveTrain.getRobotYawPitchRollAngles();
         AngularVelocity angularVelocity = driveTrain.getRobotAngularVelocity();
 
-        telemetry.addLine("a for intake, b for outtake, release for containment");
+        telemetry.addLine("Hold a for intake, tap x for launch sequence");
         telemetry.addData("Current intake state", pollenManipulator.getCurrentState());
         telemetry.addLine();
         telemetry.addData("Left motor power", "%.2f", driveTrain.getLeftPower());

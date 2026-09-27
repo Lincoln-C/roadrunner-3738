@@ -1,7 +1,11 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
+import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.constants.RobotConstants;
 
@@ -18,25 +22,39 @@ import org.firstinspires.ftc.teamcode.constants.RobotConstants;
 public class PollenManipulator {
     // Initialize hardware variables
     private final DcMotor pollenIntake;
+    private final CRServo pollenFeeder;
+    private final DcMotorEx flyWheel;
+
+    private final ElapsedTime timer = new ElapsedTime();
 
     /**
-     * HOLD_STATIC for forward driving (no motion)
-     * HOLD_REVERSE for backward driving (slow intake)
-     * INTAKING for intaking (fast intake)
-     * EJECTING for ejecting (fast outtake)
+     * HOLD: Everything stopped
+     * INTAKING: Intake running forward, flywheel stopped
+     * FLY_SPINUP: Flywheel running, intake stopped (waiting to reach speed)
+     * LAUNCH: Flywheel running, intake running forward to feed pollen into flywheel
      */
     public enum State {
-        HOLD_STATIC,
-        HOLD_REVERSE,
+        HOLD,
         INTAKING,
-        EJECTING
+        FLY_SPINUP,
+        LAUNCH
     }
 
-    private State currentState = State.HOLD_STATIC;
+    private State currentState = State.HOLD;
 
     public PollenManipulator(HardwareMap hardwareMap) {
         pollenIntake = hardwareMap.get(DcMotor.class, RobotConstants.MOTOR_INTAKE);
+        pollenFeeder = hardwareMap.get(CRServo.class, RobotConstants.SERVO_FEEDER);
+        flyWheel = hardwareMap.get(DcMotorEx.class, RobotConstants.MOTOR_FLY);
+
+        // Change directions if they backwards
+        pollenIntake.setDirection(DcMotorSimple.Direction.FORWARD);
+        pollenFeeder.setDirection(DcMotorSimple.Direction.FORWARD);
+        flyWheel.setDirection(DcMotorSimple.Direction.FORWARD);
+
         pollenIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        // Don't halt, let momentum keep going for graceful spindowns
+        flyWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
     }
 
     // State setter and getter
@@ -46,7 +64,10 @@ public class PollenManipulator {
      * @param state See State enum
      */
     public void setState(State state) {
-        this.currentState = state;
+        if (this.currentState != state) {
+            this.currentState = state;
+            timer.reset(); // Reset timer to zero
+        }
     }
 
     /**
@@ -58,15 +79,41 @@ public class PollenManipulator {
     }
 
     /**
+     * Converts RPM to Ticks per Second
+     * @param rpm Target revolutions per minute
+     * @return Target velocity in ticks per second
+     */
+    private double rpmToTicksPerSec(double rpm) {
+        return (rpm / 60.0) * RobotConstants.FLYWHEEL_TICKS_PER_REVOLUTION;
+    }
+
+    /**
      * Tells the robot to set the intake power to current state
      */
     public void run() {
         switch (currentState) {
-            case INTAKING: pollenIntake.setPower(1.0); break;
-            case EJECTING: pollenIntake.setPower(-1.0); break;
-            case HOLD_STATIC: pollenIntake.setPower(0.0); break;
-            // Hold in pollen while reversing
-            case HOLD_REVERSE: pollenIntake.setPower(0.4); break;
+            case HOLD:
+                pollenIntake.setPower(0.0);
+                flyWheel.setPower(0.0);
+                break;
+            case INTAKING:
+                pollenIntake.setPower(RobotConstants.INTAKE_SPEED);
+                flyWheel.setPower(0.0);
+                break;
+            case FLY_SPINUP:
+                pollenIntake.setPower(0.0);
+                flyWheel.setVelocity(rpmToTicksPerSec(RobotConstants.FLYWHEEL_TARGET_RPM));
+
+                // Wait for spinup then launch
+                if (timer.seconds() >= RobotConstants.FLYWHEEL_SPINUP_TIME_SEC) {
+                    setState(State.LAUNCH);
+                }
+                break;
+            case LAUNCH:
+                // Keep wheel spinning, then push pollen in
+                flyWheel.setVelocity(rpmToTicksPerSec(RobotConstants.FLYWHEEL_TARGET_RPM));
+                pollenFeeder.setPower(RobotConstants.FEEDER_SPEED);
+                break;
         }
     }
 }
