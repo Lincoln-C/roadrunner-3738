@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.IMU;
@@ -52,23 +53,38 @@ public class VisionCalibration {
         LLResult result = limelight.getLatestResult(); // Get latest picture
 
         // If the robot can't see anything, stop
-        if (result == null && !result.isValid()) {
+        if (result == null || !result.isValid()) {
             drive.drive(0, 0);
             return false; // Failure, oh no.
         }
 
-        double tx = result.getTx();
+        // Loop through and check for the one we are looking for (left center)
+        for (LLResultTypes.FiducialResult fiducial : result.getFiducialResults()) {
+            int id = fiducial.getFiducialId();
+            if (id == 31 || id == 35 || id == 39 || id == 43) {
+                // Correct tag detected
+                double tx = fiducial.getTargetXDegrees();
 
-        // If tag is in the "good" window then it is aligned
-        if (Math.abs(tx) <= RobotConstants.LL_DEGREES_ROTATION_ALIGNED) {
-            drive.drive(0, 0);
-            return true; // Success, yay!
+                // If tag is in the "good" window then it is aligned
+                if (Math.abs(tx) <= RobotConstants.LL_DEGREES_ROTATION_ALIGNED) {
+                    drive.drive(0, 0);
+                    return true; // Success, yay!
+                }
+
+                // Find direction to spin robot
+                if (tx > 0) {
+                    drive.drive(0, 0.15);
+                } // Spin right
+                else {
+                    drive.drive(0, -0.15);
+                }
+
+                return false; // Still turning...
+            }
         }
 
-        // Find direction to spin robot
-        if (tx > 0) { drive.drive(0, 0.15); } // Spin right
-        else { drive.drive(0, -0.15); }
-
-        return false; // Still turning...
+        // Not found
+        drive.drive(0, 0);
+        return false;
     }
 }

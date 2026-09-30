@@ -5,6 +5,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.constants.RobotConstants;
@@ -24,6 +25,7 @@ public class PollenManipulator {
     private final DcMotor pollenIntake;
     private final CRServo pollenFeeder;
     private final DcMotorEx flyWheel;
+    private final Servo pollenServo;
 
     private final ElapsedTime timer = new ElapsedTime();
 
@@ -46,6 +48,7 @@ public class PollenManipulator {
         pollenIntake = hardwareMap.get(DcMotor.class, RobotConstants.MOTOR_INTAKE);
         pollenFeeder = hardwareMap.get(CRServo.class, RobotConstants.SERVO_FEEDER);
         flyWheel = hardwareMap.get(DcMotorEx.class, RobotConstants.MOTOR_FLY);
+        pollenServo = hardwareMap.get(Servo.class, RobotConstants.MOTOR_POLLEN_SERVO);
 
         // Change directions if they backwards
         pollenIntake.setDirection(DcMotorSimple.Direction.FORWARD);
@@ -55,6 +58,8 @@ public class PollenManipulator {
         pollenIntake.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         // Don't halt, let momentum keep going for graceful spindowns
         flyWheel.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+
+        flyWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     }
 
     // State setter and getter
@@ -78,13 +83,8 @@ public class PollenManipulator {
         return this.currentState;
     }
 
-    /**
-     * Converts RPM to Ticks per Second
-     * @param rpm Target revolutions per minute
-     * @return Target velocity in ticks per second
-     */
-    private double rpmToTicksPerSec(double rpm) {
-        return (rpm / 60.0) * RobotConstants.FLYWHEEL_TICKS_PER_REVOLUTION;
+    public double getFlyVelocity() {
+        return flyWheel.getVelocity();
     }
 
     /**
@@ -94,15 +94,18 @@ public class PollenManipulator {
         switch (currentState) {
             case HOLD:
                 pollenIntake.setPower(0.0);
+                pollenFeeder.setPower(0.0);
                 flyWheel.setPower(0.0);
                 break;
             case INTAKING:
                 pollenIntake.setPower(RobotConstants.INTAKE_SPEED);
+                pollenFeeder.setPower(0.0);
                 flyWheel.setPower(0.0);
                 break;
             case FLY_SPINUP:
                 pollenIntake.setPower(0.0);
-                flyWheel.setVelocity(rpmToTicksPerSec(RobotConstants.FLYWHEEL_TARGET_RPM));
+                pollenFeeder.setPower(0.0);
+                flyWheel.setVelocity(RobotConstants.FLYWHEEL_TARGET_VELOCITY);
 
                 // Wait for spinup then launch
                 if (timer.seconds() >= RobotConstants.FLYWHEEL_SPINUP_TIME_SEC) {
@@ -110,10 +113,19 @@ public class PollenManipulator {
                 }
                 break;
             case LAUNCH:
+                pollenIntake.setPower(0.0);
                 // Keep wheel spinning, then push pollen in
-                flyWheel.setVelocity(rpmToTicksPerSec(RobotConstants.FLYWHEEL_TARGET_RPM));
+                flyWheel.setVelocity(RobotConstants.FLYWHEEL_TARGET_VELOCITY);
                 pollenFeeder.setPower(RobotConstants.FEEDER_SPEED);
                 break;
         }
+    }
+
+    /**
+     * Tells the robot to move the pollen poker to pos (between 0.0 and 1.0)
+     * @param pos The position to set the pollen poker
+     */
+    public void pollenPoker(double pos) {
+        pollenServo.setPosition(pos);
     }
 }

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotorEx;
 
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
@@ -41,14 +42,15 @@ public class StarterBot2627 extends LinearOpMode {
                 // Intake pollen
                 pollenManipulator.setState(PollenManipulator.State.INTAKING);
             } else if (gamepad1.x && !xPressed) {
-                xPressed = true;
-
                 // Spin up and launch if hold or intaking
                 if (pollenManipulator.getCurrentState() == PollenManipulator.State.HOLD
                         || pollenManipulator.getCurrentState() == PollenManipulator.State.INTAKING) {
                     pollenManipulator.setState(PollenManipulator.State.FLY_SPINUP);
                 }
-            } else if (!gamepad1.a && !gamepad1.x) {
+            } else if (gamepad1.b) {
+                // Emergency halt
+                pollenManipulator.setState(PollenManipulator.State.HOLD);
+            } else {
                 // If not pushing x and if not intaking or launching, stop moving
                 if (pollenManipulator.getCurrentState() != PollenManipulator.State.FLY_SPINUP
                         && pollenManipulator.getCurrentState() != PollenManipulator.State.LAUNCH) {
@@ -68,6 +70,13 @@ public class StarterBot2627 extends LinearOpMode {
             driveTrain.drive(driveY, turn);
             pollenManipulator.run();
 
+            // Servo control for poking out pollen
+            if (gamepad1.dpad_left) {
+                pollenManipulator.pollenPoker(0);
+            } else if (gamepad1.dpad_right) {
+                pollenManipulator.pollenPoker(1);
+            }
+
             // Telemetry
             updateDriveTelemetry();
         }
@@ -80,10 +89,12 @@ public class StarterBot2627 extends LinearOpMode {
         AngularVelocity angularVelocity = driveTrain.getRobotAngularVelocity();
 
         telemetry.addLine("Hold a for intake, tap x for launch sequence");
+        telemetry.addLine("Dpad left/right for move poker");
         telemetry.addData("Current intake state", pollenManipulator.getCurrentState());
         telemetry.addLine();
         telemetry.addData("Left motor power", "%.2f", driveTrain.getLeftPower());
         telemetry.addData("Right motor power", "%.2f", driveTrain.getRightPower());
+        telemetry.addData("Flywheel Velocity", pollenManipulator.getFlyVelocity());
         telemetry.addLine();
         telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
         telemetry.update();
