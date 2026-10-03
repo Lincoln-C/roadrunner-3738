@@ -117,6 +117,11 @@ public class PollenManipulator {
                 // Keep wheel spinning, then push pollen in
                 flyWheel.setVelocity(RobotConstants.FLYWHEEL_TARGET_VELOCITY);
                 pollenFeeder.setPower(RobotConstants.FEEDER_SPEED);
+
+                // Hold after number of seconds
+                if (timer.seconds() >= RobotConstants.LAUNCH_DURATION_SEC) {
+                    setState(State.HOLD);
+                }
                 break;
         }
     }

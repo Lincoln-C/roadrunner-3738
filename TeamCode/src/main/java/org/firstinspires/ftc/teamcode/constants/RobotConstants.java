@@ -38,6 +38,7 @@ public class RobotConstants {
     public static final String MOTOR_POLLEN_SERVO = "pollenServo";
 
     public static final double FLYWHEEL_SPINUP_TIME_SEC = 3.0;
+    public static final double LAUNCH_DURATION_SEC = 2.0;
 
     // ---------- LIMELIGHT NUMBERS ----------
     public static final double LL_DEGREES_ROTATION_ALIGNED = 1.5;
